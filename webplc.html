@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>webPLC – PLC Ladder Simulator</title>
+<style>
+:root{--bg:#eef1f5;--sf:#fff;--tx:#18202b;--mu:#6b7686;--bd:#d3d9e1;--ac:#2d80d2;--on:#18a957;--wr:#e5484d;--wire:#222;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f141b;--sf:#19212b;--tx:#e5eaf1;--mu:#8995a5;--bd:#2b3543;--ac:#4a9ae8;--on:#3ddc84;--wire:#cfd6e0;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#0f141b;--sf:#19212b;--tx:#e5eaf1;--mu:#8995a5;--bd:#2b3543;--ac:#4a9ae8;--on:#3ddc84;--wire:#cfd6e0;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:13px/1.4 system-ui,"Noto Sans Thai",sans-serif}
+header{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--sf);border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:6px;font-size:22px;letter-spacing:-.02em}.logo .w{font-weight:300}.logo .p{font-weight:800;background:linear-gradient(90deg,#f26a2e,#f7b32b);-webkit-background-clip:text;background-clip:text;color:transparent}.sp{flex:1}
+.badge{padding:2px 10px;border-radius:10px;background:var(--bd);font-weight:700}.badge.run{background:var(--on);color:#fff}
+.app{display:grid;grid-template-columns:minmax(300px,420px) minmax(0,1fr);gap:10px;padding:10px;align-items:start}
+@media(max-width:860px){.app{grid-template-columns:minmax(0,1fr)}}
+.pn{background:var(--sf);border:1px solid var(--bd);border-radius:8px;margin-bottom:10px;overflow:hidden}
+.tabs{display:flex;gap:4px;align-items:center;padding:6px 8px;background:var(--bg);border-bottom:1px solid var(--bd)}
+.sc{overflow:auto;max-height:230px}
+button,select,input{font:inherit;color:var(--tx);background:var(--sf);border:1px solid var(--bd);border-radius:5px;padding:3px 7px}
+button{cursor:pointer}button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:11px;color:var(--mu);padding:2px 4px}
+td{padding:1px 3px}td input,td select{width:100%;padding:2px 4px;border-color:transparent}
+.tv{text-align:center;cursor:pointer;white-space:nowrap}
+.add{display:flex;gap:4px;padding:6px}.add input{flex:1}
+.x{border:0;color:var(--wr);background:none}
+.iog{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;padding:8px}
+.dv{border:2px solid var(--bd);border-radius:8px;padding:5px;text-align:center;user-select:none;touch-action:manipulation}.dv small{display:block;color:var(--mu)}
+.in{cursor:pointer}.dv.on{border-color:var(--on);background:color-mix(in srgb,var(--on) 20%,var(--sf))}
+.dv select{width:100%;font-size:11px;padding:1px}
+.lamp{display:inline-block;width:24px;height:24px;border-radius:50%;border:2px solid var(--tx);font-weight:700;line-height:20px}
+.dv.on .lamp{background:var(--on);color:#fff}.dv.on .lamp.m{animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.tb,#pal,#prop{padding:6px 8px;border-bottom:1px solid var(--bd);display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+#lad{padding:8px;overflow:auto;min-height:190px;max-height:520px}
+.rung{display:flex;align-items:flex-start;padding:4px 0;min-width:max-content;border-radius:6px}.rung.sl{background:color-mix(in srgb,var(--ac) 8%,transparent)}
+.rn{width:22px;color:var(--mu);cursor:pointer;font-weight:400;padding-top:20px}
+.rail{width:4px;align-self:stretch;min-height:54px;background:var(--wire)}
+.gr{position:relative;display:grid;grid-template-columns:repeat(8,90px);grid-auto-rows:54px}
+.cl{cursor:pointer;overflow:hidden}.cl:hover{background:color-mix(in srgb,var(--ac) 7%,transparent)}
+.cl.sl{outline:2px solid var(--ac);outline-offset:-2px;background:color-mix(in srgb,var(--ac) 12%,transparent)}
+.cl.gh{background:repeating-linear-gradient(135deg,transparent 0 6px,color-mix(in srgb,var(--mu) 9%,transparent) 6px 12px)}
+.cl i{display:block;font-style:normal;font-size:11px;height:14px;line-height:14px;text-align:center;overflow:hidden;white-space:nowrap}
+.cl svg{display:block}.cl path,.cl circle,.cl rect{fill:none;stroke:var(--wire);stroke-width:2}.cl text{fill:var(--tx);stroke:none;font-size:11px}
+.cl.nt i{color:var(--wr)}.cl.li .L,.cl.on .S,.cl.on .R{stroke:var(--on)}.cl.on circle.S{fill:color-mix(in srgb,var(--on) 25%,transparent)}
+.vl{position:absolute;width:2px;background:var(--wire);pointer-events:none}.vl.on{background:var(--on)}
+.dot{position:absolute;width:12px;height:12px;border-radius:50%;border:1px dashed var(--mu);opacity:0;cursor:pointer;z-index:2;background:var(--sf)}
+.rung:hover .dot,.rung.sl .dot{opacity:.45}.dot:hover{opacity:1!important;background:var(--ac)}
+.help{padding:4px 8px;color:var(--mu);font-size:11px;border-bottom:1px solid var(--bd)}
+footer{text-align:center;color:var(--mu);font-size:12px;padding:14px 10px 20px}
+pre{margin:0;padding:8px;font:12px/1.5 ui-monospace,monospace;max-height:170px;overflow:auto;white-space:pre-wrap}
+.mu{color:var(--mu)}
+#sc{width:100%;max-height:170px;display:block}#sc text{fill:var(--tx);font-size:12px}
+.spin{animation:sp .6s linear infinite;transform-box:view-box;transform-origin:60px 60px}
+</style></head><body>
+<header><b class="logo"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#f26a2e"/><path d="M10 6V22M18 6V22M10 11H18M10 17H18" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><span class="w">web</span><span class="p">PLC</span></b>
+
+<button id="nw">โปรเจกต์ใหม่</button><span class="sp"></span><span id="md" class="badge">PROG</span></header>
+<datalist id="tl"></datalist>
+<div class="app"><div>
+<div class="pn"><div class="tabs"><b>Tags</b></div><div id="tg" class="sc"></div></div>
+<div class="pn"><div class="tabs"><b>IO</b><span class="mu">กดปุ่มเพื่อจำลองอุปกรณ์</span></div><div id="io" class="iog"></div></div>
+<div class="pn"><div class="tabs"><b>Scene</b> Air Compressor<span class="sp"></span><button id="sr">↻</button></div>
+<svg id="sc" viewBox="0 0 320 150"><rect x="100" y="70" width="190" height="60" rx="30" fill="#c2410c" stroke="#7c2d12" stroke-width="3"/>
+<circle cx="60" cy="60" r="26" fill="none" stroke="var(--tx)" stroke-width="3"/><g id="fw"><path d="M60 36V84M36 60H84M43 43L77 77M77 43L43 77" stroke="var(--tx)" stroke-width="2"/></g>
+<path d="M60 86V98M86 60H100M60 112H100" stroke="var(--tx)" stroke-width="3" fill="none"/>
+<circle id="mt" cx="60" cy="112" r="14" fill="var(--bd)" stroke="var(--tx)" stroke-width="2"/><text x="60" y="116" text-anchor="middle">M</text>
+<circle cx="240" cy="38" r="24" fill="var(--sf)" stroke="var(--tx)" stroke-width="3"/><line id="nd" x1="240" y1="38" x2="240" y2="20" stroke="#e5484d" stroke-width="3"/>
+<text id="ps" x="195" y="105" text-anchor="middle" style="fill:#fff;font-weight:700">0 psi</text>
+<rect x="268" y="58" width="16" height="12" fill="var(--mu)"/><g id="pf" opacity="0"><circle cx="270" cy="48" r="5" fill="#9fb3c8"/><circle cx="280" cy="42" r="4" fill="#9fb3c8"/><circle cx="276" cy="34" r="3" fill="#9fb3c8"/></g></svg>
+<p class="mu" style="margin:0;padding:0 8px 8px">DO0 = มอเตอร์ · DO1 = วาล์วระบาย · DI3 = HIGH (≥120 psi) · DI4 = LOW (≤40 psi)</p></div>
+</div><div style="min-width:0">
+<div class="pn"><div class="tabs"><button data-v="lad" class="a">Ladder</button><button data-v="st">Structured Text</button></div>
+<div id="lw"><div class="tb"><select id="mode"><option>PROG</option><option>RUN</option></select><button id="un" title="Undo (Ctrl+Z)">↶</button><button id="re" title="Redo (Ctrl+Y)">↷</button><button id="de" title="ลบคำสั่ง (Del)">ลบ</button><button id="ar">+ Rung</button><button id="dr">ลบ Rung</button><button id="up">↑</button><button id="dn">↓</button><button id="ic">แทรกช่อง</button><button id="dc">ลบช่อง</button></div><div class="help">คลิกช่อง แล้วกดเลข 1–8 หรือปุ่มพาเลตต์เพื่อวางคำสั่ง จากนั้น<b>เลือกแท็กจากแถบด้านบน</b> · ลูกศร = เลื่อนเคอร์เซอร์ · Del = ลบ · <b>วงกลมระหว่างแถว</b> = เส้นเชื่อมแนวตั้ง (ทำวงจรขนาน)</div>
+<div id="pal"></div><div id="prop"></div><div id="lad"></div></div><pre id="stx" hidden></pre></div>
+<div class="pn"><div class="tabs"><button data-o="out" class="a">Output</button><button data-o="err">Errors <span id="ec"></span></button></div><pre id="olog"></pre><pre id="elog" hidden></pre></div>
+</div></div>
+<footer>© 2026 webPLC · Created by Jirapong Sukkreerak with Claude Code</footer>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const COND=['NO','NC','EQU','NEQ','GRT','GEQ','LES','LEQ'],OUTS=['OUT','SET','RST','TON','CTU','RES','ADD','SUB','MUL','MOV'],CMP={EQU:'=',NEQ:'<>',GRT:'>',GEQ:'>=',LES:'<',LEQ:'<='},MATH=['ADD','SUB','MUL','MOV'];
+let tags=[],prog=[],sel=null,mode='PROG',P=0,hist=[],fut=[],logs=[],cache={},pt='Favorites',held=[];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const T=(n,al='',t='BOOL',dev)=>({n,al,t,v:0,acc:0,pre:0,dev});
+const ft=s=>s&&tags.find(t=>t.n==s||t.al==s),fn=n=>tags.find(t=>t.n==n),okn=s=>/^[A-Za-z_]\w*$/.test(s);
+const all=g=>g.c.flat().filter(Boolean);
+const say=s=>{logs.push(new Date().toLocaleTimeString('th-TH')+'  '+s);$('#olog').textContent=logs.slice(-60).join('\n')};
+/* ---------- engine ---------- */
+function rv(x){if(typeof x=='number')return x;const[b,f]=String(x).split('.'),t=ft(b);if(!t)return isNaN(+x)?0:+x;return f=='ACC'?t.acc:f=='PRE'?t.pre:+t.v}
+const sv=(x,v)=>{const t=ft(x);if(t)t.v=t.t=='INT'?Math.trunc(v):v?1:0};
+function cond(e){const a=rv(e.a);if(e.k=='NO')return!!a;if(e.k=='NC')return!a;const b=rv(e.b);return{EQU:a==b,NEQ:a!=b,GRT:a>b,GEQ:a>=b,LES:a<b,LEQ:a<=b}[e.k]}
+function exec(e,p,dt){const t=ft(e.a),k=e.k;
+ if(k=='OUT')sv(e.a,p);else if(k=='SET'){if(p)sv(e.a,1)}else if(k=='RST'){if(p)sv(e.a,0)}
+ else if(!t)return;
+ else if(k=='TON'){t.pre=e.pre;t.acc=p?Math.min(t.acc+dt,e.pre):0;t.v=t.acc>=e.pre?1:0}
+ else if(k=='CTU'){t.pre=e.pre;if(p&&!e.pw)t.acc++;e.pw=p;t.v=t.acc>=e.pre?1:0}
+ else if(k=='RES'){if(p){t.acc=0;t.v=0}}
+ else if(p){const b=rv(e.b),c=rv(e.c);sv(e.a,k=='ADD'?b+c:k=='SUB'?b-c:k=='MUL'?b*c:b)}}
+const C=8,CW=90,RH=54,vk=(b,w)=>b+','+w;
+function mk(id,v){if(cache[id]===v)return;cache[id]=v;const e=document.getElementById(id);if(e)e.classList.toggle('on',v)}
+function mk2(id,pi,po){const v=(pi?1:0)|(po?2:0);if(cache[id]===v)return;cache[id]=v;const e=document.getElementById(id);if(e){e.classList.toggle('li',!!pi);e.classList.toggle('on',!!po)}}
+function runRung(g,r,dt){const R=g.c.length,p=Array(R).fill(false);p[0]=true;
+ for(let b=0;b<C;b++){
+  for(let i=0;i<R;){let j=i;while(j<R-1&&g.v[vk(b,j)])j++;const any=p.slice(i,j+1).some(x=>x);for(let k=i;k<=j;k++)p[k]=any;for(let k=i;k<j;k++)mk(`v${r}-${b}-${k}`,any);i=j+1}
+  for(let w=0;w<R;w++){const e=g.c[w][b],pi=p[w],id=`c${r}-${w}-${b}`;
+   if(!e)mk2(id,pi,pi);else if(COND.includes(e.k)){const q=pi&&cond(e);p[w]=q;mk2(id,pi,q)}else{exec(e,pi,dt);mk2(id,pi,pi)}}}}
+const scan=dt=>prog.forEach((g,r)=>runRung(g,r,dt));
+function phys(dt){const m=fn('DO0'),v=fn('DO1');P+=((m&&m.v?25:0)-.8-(v&&v.v?45:0))*dt/1000;P=Math.max(0,Math.min(150,P));
+ [['DI3',P>=120],['DI4',P<=40]].forEach(([n,x])=>{const t=fn(n);if(t&&t.dev=='SENS')t.v=x?1:0})}
+/* ---------- ladder grid ---------- */
+const ensure=(g,w)=>{while(g.c.length<=w)g.c.push(Array(C).fill(null))};
+function trim(g){const used=w=>g.c[w].some(Boolean)||Object.keys(g.v).some(k=>+k.split(',')[1]+1==w);while(g.c.length>1&&!used(g.c.length-1))g.c.pop()}
+const newRung=()=>({c:[Array(C).fill(null)],v:{}});
+function span(g,w){let lo=w?99:0,hi=w?-1:C;(g.c[w]||[]).forEach((x,c)=>{if(x){lo=Math.min(lo,c);hi=Math.max(hi,c+1)}});
+ for(const k in g.v){const[b,r]=k.split(',').map(Number);if(r==w||r+1==w){lo=Math.min(lo,b);hi=Math.max(hi,b)}}return[lo,hi]}
+function parts(e){const k=e.k;
+ if(k=='NO'||k=='NC')return['M0 12H39',`<path class="S" d="M39 3V21M51 3V21${k=='NC'?'M36 21L54 3':''}"/>`,'M51 12H90'];
+ if(k=='OUT'||k=='SET'||k=='RST')return['M0 12H32',`<circle class="S" cx="45" cy="12" r="13"/>${k!='OUT'?`<text x="45" y="16" text-anchor="middle">${k=='SET'?'S':'R'}</text>`:''}`,'M58 12H90'];
+ const L=k=='TON'?`TON ${e.pre/1000}s`:k=='CTU'?`CTU ${e.pre}`:k;
+ return['M0 12H12',`<rect class="S" x="12" y="0" width="66" height="24"/><text x="45" y="16" text-anchor="middle">${L}</text>`,'M78 12H90']}
+function lbl(e){if(COND.indexOf(e.k)>1)return[e.a,CMP[e.k]+' '+e.b];
+ if(MATH.includes(e.k))return[e.a,'= '+e.b+(e.k=='MOV'?'':({ADD:' + ',SUB:' - ',MUL:' × '})[e.k]+e.c)];
+ const t=ft(e.a);return[t?t.al||t.n:(e.a||'เลือกแท็ก'),t?t.n:'?']}
+function ch(g,r,w,c,sp,gh){const e=g.c[w]&&g.c[w][c],hd=`<div class="cl${gh?' gh':''}${e&&e.a===''?' nt':''}" id="c${r}-${w}-${c}" data-l="${r},${w},${c}">`;
+ if(e){const[L,S,Q]=parts(e),[a,b]=lbl(e);return`${hd}<i>${esc(a)}</i><svg width="90" height="24"><path class="L" d="${L}"/>${S}<path class="R" d="${Q}"/></svg><i>${esc(b)}</i></div>`}
+ return hd+(sp&&c>=sp[0]&&c<sp[1]?'<i></i><svg width="90" height="24"><path class="L" d="M0 12H45"/><path class="R" d="M45 12H90"/></svg>':'')+'</div>'}
+function rg(g,r){const s=sel&&sel.r==r,Rd=Math.min(8,Math.max(g.c.length+(s?1:0),s?sel.w+1:0,1));let cells='',dots='';
+ for(let w=0;w<Rd;w++){const sp=span(g,w);for(let c=0;c<C;c++)cells+=ch(g,r,w,c,sp,w>=g.c.length)}
+ const vls=Object.keys(g.v).map(k=>{const[b,w]=k.split(',').map(Number);return`<div class="vl" id="v${r}-${b}-${w}" style="left:${b*CW-1}px;top:${w*RH+26}px;height:${RH}px"></div>`}).join('');
+ for(let w=0;w<Rd-1;w++)for(let b=0;b<C;b++)dots+=`<div class="dot" data-j="${r},${b},${w}" style="left:${b*CW-6}px;top:${w*RH+47}px"></div>`;
+ return`<div class="rung${s?' sl':''}"><b class="rn" data-rg="${r}">${r}</b><u class="rail"></u><div class="gr" style="width:${C*CW}px;height:${Rd*RH}px">${cells}${vls}${dots}</div><u class="rail"></u></div>`}
+function render(){$('#lad').innerHTML=prog.map(rg).join('')||'<p class="mu" style="padding:8px">ยังไม่มี Rung – กด + Rung</p>';cache={};hl();props()}
+function draw(){render();stx();errs();save()}
+function hl(){$$('.cl.sl').forEach(x=>x.classList.remove('sl'));if(!sel)return;const e=document.getElementById(`c${sel.r}-${sel.w}-${sel.c}`);if(e)e.classList.add('sl')}
+const select=s=>{sel=s;render()},curI=()=>sel&&prog[sel.r]&&prog[sel.r].c[sel.w]&&prog[sel.r].c[sel.w][sel.c];
+/* ---------- instructions ---------- */
+const TY={NO:['BOOL','TON','CTU'],NC:['BOOL','TON','CTU'],OUT:['BOOL'],SET:['BOOL'],RST:['BOOL'],TON:['TON'],CTU:['CTU'],RES:['TON','CTU'],ADD:['INT'],SUB:['INT'],MUL:['INT'],MOV:['INT']};
+const allowed=k=>TY[k]?tags.filter(t=>TY[k].includes(t.t)):[];
+const guard=()=>mode=='RUN'&&(say('อยู่ในโหมด RUN – สลับเป็น PROG เพื่อแก้ไข'),true);
+const snap=()=>{hist.push(JSON.stringify(prog));if(hist.length>50)hist.shift();fut=[]};
+const nt=(t,p)=>{let n=1;while(fn(p+n))n++;tags.push(T(p+n,'',t));rt();return p+n};
+function fix(e){if(!TY[e.k]||allowed(e.k).some(t=>t.n==e.a))return;e.a=e.k=='TON'?nt('TON','T'):e.k=='CTU'?nt('CTU','C'):''}
+function mkI(k){const e={k,a:'',b:0,c:0};if(k=='TON'){e.pre=2000;e.a=nt('TON','T')}else if(k=='CTU'){e.pre=5;e.a=nt('CTU','C')}return e}
+function autoLink(g,w,c,isO){if(w<1)return;const r=w-1,ks=Object.keys(g.v).filter(k=>+k.split(',')[1]==r).map(k=>+k.split(',')[0]);
+ if(isO){g.v[vk(C-1,r)]=1;return}
+ if(!ks.some(b=>b<=c)){g.v[vk(c,r)]=1;g.v[vk(c+1,r)]=1}
+ else if(ks.includes(c)&&ks.some(b=>b<c)){delete g.v[vk(c,r)];g.v[vk(c+1,r)]=1}}
+function add(k){if(guard())return;snap();if(!prog.length)prog.push(newRung());if(!sel)sel={r:prog.length-1,w:0,c:0};
+ const g=prog[sel.r],isO=OUTS.includes(k);let{w,c}=sel;ensure(g,w);
+ if(isO)c=C-1;else if(c>=C-1){c=g.c[w].findIndex((x,i)=>i<C-1&&!x);if(c<0)c=C-2}
+ g.c[w][c]=mkI(k);autoLink(g,w,c,isO);sel={r:sel.r,w,c};draw()}
+function del(){if(guard()||!sel)return;const g=prog[sel.r],{w,c}=sel;if(!g||!g.c[w]||!g.c[w][c])return;snap();g.c[w][c]=null;
+ if(w>0&&!g.c[w].some(Boolean))for(const k of Object.keys(g.v)){const rr=+k.split(',')[1];if(rr==w||rr==w-1)delete g.v[k]}
+ trim(g);draw()}
+function mvc(dw,dc){if(!prog.length)return;if(!sel)sel={r:0,w:0,c:0};let{r,w,c}=sel;c=Math.max(0,Math.min(C-1,c+dc));w+=dw;const mx=Math.min(7,prog[r].c.length);
+ if(w<0){if(r>0){r--;w=prog[r].c.length-1}else w=0}else if(w>mx){if(r<prog.length-1){r++;w=0}else w=mx}select({r,w,c})}
+function mr(d){if(!sel||guard())return;const r=sel.r,j=r+d;if(j<0||j>=prog.length)return;snap();[prog[r],prog[j]]=[prog[j],prog[r]];sel={...sel,r:j};draw()}
+function shiftC(g,c,d){const LC=C-2;if(d>0&&g.c.some(r=>r[LC])){say('ไม่มีช่องว่างพอให้แทรก');return}
+ g.c.forEach(r=>{if(d>0){r.splice(LC,1);r.splice(c,0,null)}else{r.splice(c,1);r.splice(LC,0,null)}});
+ const nv={};for(const k in g.v){let[b,w]=k.split(',').map(Number);if(b>c&&b<C-1)b+=d;nv[vk(b,w)]=1}g.v=nv}
+function undo(){if(guard()||!hist.length)return;fut.push(JSON.stringify(prog));prog=JSON.parse(hist.pop());draw()}
+function redo(){if(guard()||!fut.length)return;hist.push(JSON.stringify(prog));prog=JSON.parse(fut.pop());draw()}
+const ACT={un:undo,re:redo,de:del,up:()=>mr(-1),dn:()=>mr(1),
+ ar(){if(guard())return;snap();const r=sel?sel.r+1:prog.length;prog.splice(r,0,newRung());sel={r,w:0,c:0};draw()},
+ dr(){if(!sel||guard())return;snap();prog.splice(sel.r,1);sel=prog.length?{r:Math.min(sel.r,prog.length-1),w:0,c:0}:null;draw()},
+ ic(){if(!sel||guard()||sel.c>C-2)return;snap();shiftC(prog[sel.r],sel.c,1);draw()},
+ dc(){if(!sel||guard()||sel.c>C-2)return;snap();shiftC(prog[sel.r],sel.c,-1);draw()}};
+$('.tb').onclick=e=>{const b=e.target.closest('button');if(b&&ACT[b.id])ACT[b.id]()};
+$('#lad').onclick=e=>{const cl=e.target.closest('.cl'),rn=e.target.closest('.rn'),d=e.target.closest('.dot');
+ if(d){if(guard())return;const[r,b,w]=d.dataset.j.split(',').map(Number),g=prog[r],k=vk(b,w);snap();if(g.v[k])delete g.v[k];else{ensure(g,w+1);g.v[k]=1}trim(g);sel={r,w,c:b};draw();return}
+ if(cl){const[r,w,c]=cl.dataset.l.split(',').map(Number);select({r,w,c})}else if(rn)select({r:+rn.dataset.rg,w:0,c:0})};
+addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)||$('#lw').hidden)return;
+ if(e.ctrlKey||e.metaKey){if(e.key=='z'){undo();e.preventDefault()}else if(e.key=='y'){redo();e.preventDefault()}return}
+ const K={1:'NO',2:'NC',3:'OUT',4:'SET',5:'RST',6:'TON',7:'CTU',8:'RES'},A={ArrowLeft:[0,-1],ArrowRight:[0,1],ArrowUp:[-1,0],ArrowDown:[1,0]};
+ if(K[e.key])add(K[e.key]);else if(A[e.key])mvc(...A[e.key]);else if(e.key=='Delete'||e.key=='Backspace')del();else return;e.preventDefault()});
+/* ---------- properties & palette ---------- */
+function tsel(e,f){const L=allowed(e.k);return`<select data-f="${f}">${!e.a?'<option value="" selected>— เลือกแท็ก —</option>':L.some(t=>t.n==e.a)?'':`<option value="${esc(e.a)}" selected>${esc(e.a)}</option>`}${L.map(t=>`<option value="${t.n}"${t.n==e.a?' selected':''}>${esc(t.al?t.al+' ('+t.n+')':t.n)}</option>`).join('')}</select>`}
+function props(){const e=curI(),h=$('#prop');
+ if(!sel){h.innerHTML='<span class="mu">คลิกช่องใน Rung เพื่อเริ่มวางคำสั่ง</span>';return}
+ if(!e){h.innerHTML=`<span class="mu">ช่องว่าง (Rung ${sel.r} · แถว ${sel.w} · คอลัมน์ ${sel.c}) – เลือกคำสั่งจากพาเลตต์ หรือกดเลข 1–8</span>`;return}
+ const cm=COND.indexOf(e.k)>1,m=MATH.includes(e.k),inp=f=>`<input list="tl" data-f="${f}" value="${esc(e[f])}" style="width:84px">`;
+ h.innerHTML=`<select data-f="k">${(COND.includes(e.k)?COND:OUTS).map(x=>`<option${x==e.k?' selected':''}>${x}</option>`).join('')}</select> `+
+ (cm?inp('a')+' '+CMP[e.k]+' '+inp('b'):m?tsel(e,'a')+' = '+inp('b')+(e.k!='MOV'?' '+inp('c'):''):tsel(e,'a'))+
+ (e.k=='TON'?` เวลา <input data-f="pre" type="number" min="0.1" step="0.1" value="${e.pre/1000}" style="width:64px"> s`:e.k=='CTU'?` ค่านับ <input data-f="pre" type="number" min="1" value="${e.pre}" style="width:64px">`:'')}
+$('#prop').onchange=ev=>{const e=curI(),f=ev.target.dataset.f;if(!e||!f||guard())return;snap();let v=ev.target.value;
+ if(f=='pre')e.pre=e.k=='TON'?Math.max(100,v*1000):Math.max(1,+v);
+ else if(f=='k'){e.k=v;e.b??=0;e.c??=0;if(v=='TON')e.pre=2000;if(v=='CTU')e.pre=5;fix(e)}
+ else{const t=ft(v);e[f]=t?t.n:v}draw()};
+const PAL={Favorites:['NO','NC','OUT','TON','CTU'],Bit:['NO','NC','OUT','SET','RST'],Timer:['TON','RES'],Counter:['CTU','RES'],Math:MATH,Compare:['EQU','NEQ','GRT','GEQ','LES','LEQ']},SYM={NO:'┤ ├',NC:'┤/├',OUT:'( )',SET:'(S)',RST:'(R)'},KEY={NO:1,NC:2,OUT:3,SET:4,RST:5,TON:6,CTU:7,RES:8};
+function pal(){$('#pal').innerHTML=Object.keys(PAL).map(k=>`<button class="${k==pt?'a':''}" data-t="${k}">${k}</button>`).join('')+'<br>'+PAL[pt].map(k=>`<button data-k="${k}">${KEY[k]?KEY[k]+' ':''}${SYM[k]?SYM[k]+' ':''}${k}</button>`).join('')}
+$('#pal').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.t){pt=b.dataset.t;pal()}else add(b.dataset.k)};
+/* ---------- tags & IO ---------- */
+function rt(){$('#tg').innerHTML='<table><tr><th>Name<th>Alias<th>Type<th>Value<th></tr>'+tags.map((t,i)=>`<tr><td><input data-i="${i}" data-f="n" value="${esc(t.n)}"><td><input data-i="${i}" data-f="al" value="${esc(t.al)}"><td><select data-i="${i}" data-f="t">${['BOOL','INT','TON','CTU'].map(x=>`<option${x==t.t?' selected':''}>${x}</option>`).join('')}</select><td class="tv" data-i="${i}" ${t.t=='INT'?'':`id="tv${i}"`}>${t.t=='INT'?`<input type="number" id="tv${i}" data-i="${i}" data-f="v" style="width:64px">`:''}</td><td><button class="x" data-d="${i}">×</button></tr>`).join('')+'</table><div class="add"><input id="nn" placeholder="New Tag"><button id="nb">Create Tag</button></div>';
+ $('#tl').innerHTML=tags.map(t=>`<option value="${esc(t.n)}">${esc(t.al)}</option>`).join('');cache={};io()}
+$('#tg').onchange=ev=>{const d=ev.target.dataset,t=tags[d.i];if(!t)return;let v=ev.target.value;
+ if(d.f=='n'){v=v.trim();if(!okn(v)||fn(v)){say('ชื่อแท็กไม่ถูกต้องหรือซ้ำ');rt();return}const o=t.n;prog.forEach(g=>all(g).forEach(e=>['a','b','c'].forEach(f=>{if(e[f]===o)e[f]=v})));t.n=v;draw()}
+ else if(d.f=='al'){t.al=v.trim();draw()}else if(d.f=='t'){t.t=v;t.v=0;t.acc=0}else if(d.f=='v')t.v=+v;rt()};
+$('#tg').onclick=ev=>{const b=ev.target;
+ if(b.id=='nb'){const n=$('#nn').value.trim();if(okn(n)&&!fn(n)){tags.push(T(n,'','BOOL',/^DI/.test(n)?'NO':undefined));rt()}else say('ชื่อแท็กไม่ถูกต้องหรือซ้ำ (ใช้ A–Z, 0–9, _)')}
+ else if(b.dataset.d){tags.splice(b.dataset.d,1);rt();draw()}
+ else if(b.classList.contains('tv')&&tags[b.dataset.i].t=='BOOL')tags[b.dataset.i].v^=1};
+function io(){$('#io').innerHTML=tags.filter(t=>/^D[IO]/.test(t.n)).map(t=>t.n[1]=='I'?
+ `<div class="dv in" id="iv-${t.n}" data-n="${t.n}"><b>${esc(t.al||t.n)}</b><small>${t.n}</small><select>${['NO','NC','SW','SENS'].map(x=>`<option${t.dev==x?' selected':''}>${x}</option>`).join('')}</select></div>`:
+ `<div class="dv" id="iv-${t.n}"><b>${esc(t.al||t.n)}</b><small>${t.n}</small><span class="lamp${/motor/i.test(t.al)?' m':''}">${/motor/i.test(t.al)?'M':''}</span></div>`).join('')}
+$('#io').addEventListener('pointerdown',e=>{if(e.target.tagName=='SELECT')return;const d=e.target.closest('.in'),t=d&&fn(d.dataset.n);if(!t)return;
+ if(t.dev=='NO'){t.v=1;held.push(t)}else if(t.dev=='NC'){t.v=0;held.push(t)}else if(t.dev=='SW')t.v^=1});
+addEventListener('pointerup',()=>{held.forEach(t=>t.v=t.dev=='NC'?1:0);held=[]});
+$('#io').onchange=e=>{const t=fn(e.target.closest('.in').dataset.n);t.dev=e.target.value;t.v=t.dev=='NC'?1:0};
+/* ---------- validation, ST, mode ---------- */
+const okOp=x=>x!==''&&x!=null&&(!isNaN(+x)||!!ft(String(x).split('.')[0]));
+function validate(){const er=[],seen={};prog.forEach((g,r)=>{let outs=0;all(g).forEach(e=>{const cm=COND.indexOf(e.k)>1,mt=MATH.includes(e.k);
+ if(!cm&&!ft(e.a))er.push(e.a===''?`Rung ${r}: ${e.k} ยังไม่ได้เลือกแท็ก`:`Rung ${r}: ไม่พบแท็ก “${e.a}” (${e.k})`);
+ (cm?['a','b']:mt?['b','c']:[]).forEach(f=>{if(!okOp(e[f]))er.push(e[f]===''?`Rung ${r}: ${e.k} ยังไม่ได้ระบุตัวถูกดำเนินการ`:`Rung ${r}: ตัวถูกดำเนินการ “${e[f]}” ใช้ไม่ได้`)});
+ if(OUTS.includes(e.k))outs++;if(e.k=='OUT'){if(seen[e.a])er.push(`คำเตือน: Rung ${r} ใช้ OUT ซ้ำกับแท็ก ${e.a}`);seen[e.a]=1}});
+ if(!outs)er.push(`คำเตือน: Rung ${r} ยังไม่มี Output`)});return er}
+function errs(){const er=validate();$('#elog').textContent=er.join('\n')||'ไม่มีข้อผิดพลาด';$('#ec').textContent=er.length?`(${er.length})`:''}
+const nmI=x=>{const t=ft(x);return t?t.al||t.n:x},ce=e=>e.k=='NO'?nmI(e.a):e.k=='NC'?'NOT '+nmI(e.a):`(${nmI(e.a)} ${CMP[e.k]} ${nmI(e.b)})`;
+const wrp=s=>s.includes(' OR ')?`(${s})`:s,AND=(a,b)=>a=='TRUE'?b:wrp(a)+' AND '+b;
+function outT(e,c){const n=nmI(e.a);switch(e.k){case'OUT':return`${n} := ${c};`;case'SET':return`IF ${c} THEN ${n} := TRUE; END_IF;`;case'RST':return`IF ${c} THEN ${n} := FALSE; END_IF;`;case'TON':return`${n}(IN := ${c}, PT := T#${e.pre}ms);`;case'CTU':return`${n}(CU := ${c}, PV := ${e.pre});`;case'RES':return`IF ${c} THEN ${n}.ACC := 0; END_IF;`;default:return`IF ${c} THEN ${n} := ${e.b}${e.k=='MOV'?'':{ADD:' + ',SUB:' - ',MUL:' * '}[e.k]+e.c}; END_IF;`}}
+function stx(){$('#stx').textContent=prog.map((g,r)=>{const R=g.c.length,p=Array(R).fill(null),out=[];p[0]='TRUE';
+ for(let b=0;b<C;b++){for(let i=0;i<R;){let j=i;while(j<R-1&&g.v[vk(b,j)])j++;const l=[...new Set(p.slice(i,j+1).filter(Boolean))],s=l.length?l.join(' OR '):null;for(let k=i;k<=j;k++)p[k]=s;i=j+1}
+  for(let w=0;w<R;w++){const e=g.c[w][b];if(!e)continue;if(COND.includes(e.k))p[w]=p[w]?AND(p[w],ce(e)):null;else if(p[w])out.push(outT(e,p[w]))}}
+ return`(* Rung ${r} *)\n`+(out.join('\n')||'(* ไม่มี Output *)')}).join('\n\n')}
+function setMode(m){if(m=='RUN'){const er=validate().filter(x=>!x.startsWith('คำเตือน'));if(er.length){say('RUN ไม่ได้: มีข้อผิดพลาด ดูแท็บ Errors');$('#mode').value='PROG';return}}
+ mode=m;$('#mode').value=m;$('#md').textContent=m;$('#md').className='badge'+(m=='RUN'?' run':'');
+ if(m=='PROG')tags.forEach(t=>{if(!/^DI/.test(t.n)){t.v=0;t.acc=0}});
+ prog.forEach(g=>all(g).forEach(e=>e.pw=false));say('โหมด → '+m);draw()}
+$('#mode').onchange=e=>setMode(e.target.value);
+/* ---------- examples / storage ---------- */
+function base(){tags=[['DI0','START','NO'],['DI1','STOP','NC'],['DI2','VENT','SW'],['DI3','HIGH','SENS'],['DI4','LOW','SENS'],['DO0','MOTOR'],['DO1','VALVE']].map(([n,a,d])=>{const t=T(n,a,'BOOL',d);t.v=d=='NC'?1:0;return t})}
+$('#nw').onclick=()=>{base();prog=[newRung()];sel={r:0,w:0,c:0};hist=[];fut=[];P=0;rt();setMode('PROG')};
+$('#sr').onclick=()=>{P=0};
+function save(){try{localStorage.setItem('webplc1',JSON.stringify({tags,prog}))}catch(e){}}
+function load(){try{Object.keys(localStorage).filter(k=>/^plc/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}try{const s=JSON.parse(localStorage.getItem('webplc1'));if(s&&s.tags&&s.prog){tags=s.tags;prog=s.prog;return true}}catch(e){}}
+/* ---------- tabs & loop ---------- */
+$$('[data-v]').forEach(b=>b.onclick=()=>{$$('[data-v]').forEach(x=>x.classList.toggle('a',x==b));$('#lw').hidden=b.dataset.v!='lad';$('#stx').hidden=b.dataset.v!='st'});
+$$('[data-o]').forEach(b=>b.onclick=()=>{$$('[data-o]').forEach(x=>x.classList.toggle('a',x==b));$('#olog').hidden=b.dataset.o!='out';$('#elog').hidden=b.dataset.o!='err'});
+function paint(){tags.forEach((t,i)=>{const e=document.getElementById('tv'+i);if(!e)return;
+  const s=t.t=='TON'?`${(t.acc/1000).toFixed(1)}s · ${t.v}`:t.t=='CTU'?`${t.acc}/${t.pre} · ${t.v}`:t.v;
+  if(e.tagName=='INPUT'){if(document.activeElement!==e)e.value=s}else if(e.textContent!=s)e.textContent=s;mk('iv-'+t.n,!!t.v)});
+ const m=fn('DO0'),v=fn('DO1');$('#nd').setAttribute('transform',`rotate(${P/150*240-120} 240 38)`);$('#ps').textContent=Math.round(P)+' psi';
+ $('#fw').classList.toggle('spin',!!(m&&m.v));$('#mt').setAttribute('fill',m&&m.v?'var(--on)':'var(--bd)');$('#pf').setAttribute('opacity',v&&v.v?1:0)}
+let last=performance.now();setInterval(()=>{const n=performance.now(),dt=Math.min(n-last,200);last=n;phys(dt);if(mode=='RUN')scan(dt);paint()},50);
+if(!load()){base();prog=[newRung()];sel={r:0,w:0,c:0}}rt();pal();draw();say('พร้อมใช้งาน – อยู่ในโหมด PROG');
+</script></body></html>
