@@ -49,8 +49,10 @@ td{padding:1px 3px}td input,td select{width:100%;padding:2px 4px;border-color:tr
 footer{text-align:center;color:var(--mu);font-size:12px;padding:14px 10px 20px}
 pre{margin:0;padding:8px;font:12px/1.5 ui-monospace,monospace;max-height:170px;overflow:auto;white-space:pre-wrap}
 .mu{color:var(--mu)}
-#sc{width:100%;max-height:170px;display:block}#sc text{fill:var(--tx);font-size:12px}
-.spin{animation:sp .6s linear infinite;transform-box:view-box;transform-origin:60px 60px}
+#sc{width:100%;max-height:250px;display:block}#sc text{fill:var(--tx);font-size:12px}#sc .sm{font-size:9px;fill:var(--mu)}#sc .bd{font-size:15px;font-weight:700;paint-order:stroke;stroke:var(--sf);stroke-width:3px}
+.flow{stroke-dasharray:6 6;animation:dash .5s linear infinite}@keyframes dash{to{stroke-dashoffset:-12}}
+.puff{fill:#9fb3c8;animation:pf 1s linear infinite}@keyframes pf{from{transform:translate(0,0);opacity:.9}to{transform:translate(22px,-8px);opacity:0}}
+.spin{animation:sp .6s linear infinite;transform-box:view-box;transform-origin:70px 95px}
 </style></head><body>
 <header><b class="logo"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#f26a2e"/><path d="M10 6V22M18 6V22M10 11H18M10 17H18" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><span class="w">web</span><span class="p">PLC</span></b>
 
@@ -60,14 +62,32 @@ pre{margin:0;padding:8px;font:12px/1.5 ui-monospace,monospace;max-height:170px;o
 <div class="pn"><div class="tabs"><b>Tags</b></div><div id="tg" class="sc"></div></div>
 <div class="pn"><div class="tabs"><b>IO</b><span class="mu">กดปุ่มเพื่อจำลองอุปกรณ์</span></div><div id="io" class="iog"></div></div>
 <div class="pn"><div class="tabs"><b>Scene</b> Air Compressor<span class="sp"></span><button id="sr">↻</button></div>
-<svg id="sc" viewBox="0 0 320 150"><rect x="100" y="70" width="190" height="60" rx="30" fill="#c2410c" stroke="#7c2d12" stroke-width="3"/>
-<circle cx="60" cy="60" r="26" fill="none" stroke="var(--tx)" stroke-width="3"/><g id="fw"><path d="M60 36V84M36 60H84M43 43L77 77M77 43L43 77" stroke="var(--tx)" stroke-width="2"/></g>
-<path d="M60 86V98M86 60H100M60 112H100" stroke="var(--tx)" stroke-width="3" fill="none"/>
-<circle id="mt" cx="60" cy="112" r="14" fill="var(--bd)" stroke="var(--tx)" stroke-width="2"/><text x="60" y="116" text-anchor="middle">M</text>
-<circle cx="240" cy="38" r="24" fill="var(--sf)" stroke="var(--tx)" stroke-width="3"/><line id="nd" x1="240" y1="38" x2="240" y2="20" stroke="#e5484d" stroke-width="3"/>
-<text id="ps" x="195" y="105" text-anchor="middle" style="fill:#fff;font-weight:700">0 psi</text>
-<rect x="268" y="58" width="16" height="12" fill="var(--mu)"/><g id="pf" opacity="0"><circle cx="270" cy="48" r="5" fill="#9fb3c8"/><circle cx="280" cy="42" r="4" fill="#9fb3c8"/><circle cx="276" cy="34" r="3" fill="#9fb3c8"/></g></svg>
-<p class="mu" style="margin:0;padding:0 8px 8px">DO0 = มอเตอร์ · DO1 = วาล์วระบาย · DI3 = HIGH (≥120 psi) · DI4 = LOW (≤40 psi)</p></div>
+<svg id="sc" viewBox="0 0 360 204" role="img" aria-label="Air compressor simulation">
+<clipPath id="tcp"><rect x="110" y="112" width="230" height="56" rx="28"/></clipPath>
+<line x1="4" y1="182" x2="356" y2="182" stroke="var(--bd)" stroke-width="2"/>
+<rect x="8" y="170" width="84" height="12" rx="2" fill="var(--bd)"/><rect x="132" y="168" width="10" height="14" fill="var(--mu)"/><rect x="308" y="168" width="10" height="14" fill="var(--mu)"/>
+<text x="4" y="17" class="sm">SENSORS</text>
+<circle id="lw" cx="150" cy="14" r="6" fill="var(--bd)" stroke="var(--tx)" stroke-width="1.5"/><text x="160" y="17" class="sm">LOW ≤ 40 psi · DI4</text>
+<circle id="hw" cx="262" cy="14" r="6" fill="var(--bd)" stroke="var(--tx)" stroke-width="1.5"/><text x="272" y="17" class="sm">HIGH ≥ 120 · DI3</text>
+<path d="M21.5 141.4L54.8 85.3M48.5 158.6L85.2 104.7" stroke="var(--mu)" stroke-width="3" fill="none"/>
+<rect x="56" y="50" width="28" height="26" rx="3" fill="var(--bd)" stroke="var(--tx)" stroke-width="2"/><path d="M56 55H84M56 60H84M56 65H84" stroke="var(--tx)" stroke-width="1"/>
+<circle cx="70" cy="95" r="18" fill="var(--sf)" stroke="var(--tx)" stroke-width="3"/>
+<g id="fw"><path d="M70 79V111M54 95H86M59 84L81 106M81 84L59 106" stroke="var(--tx)" stroke-width="2" fill="none"/><circle cx="70" cy="81" r="3" fill="#f26a2e"/></g><circle cx="70" cy="95" r="3" fill="var(--tx)"/>
+<path d="M84 58H150V112" stroke="var(--mu)" stroke-width="5" fill="none"/><path id="fl" class="flow" d="M84 58H150V112" stroke="#3b9bff" stroke-width="2" fill="none" opacity="0"/>
+<circle cx="118" cy="58" r="7" fill="var(--sf)" stroke="var(--tx)" stroke-width="2"/><path d="M115 58H121M119 55L122 58L119 61" stroke="var(--tx)" fill="none"/>
+<circle id="mt" cx="35" cy="150" r="16" fill="var(--bd)" stroke="var(--tx)" stroke-width="3"/><text x="35" y="155" text-anchor="middle" style="font-size:14px;font-weight:700">M</text>
+<rect x="110" y="112" width="230" height="56" rx="28" fill="var(--sf)"/>
+<rect id="tf" x="110" y="168" width="230" height="0" fill="#3b9bff" opacity=".55" clip-path="url(#tcp)"/>
+<rect x="110" y="112" width="230" height="56" rx="28" fill="none" stroke="var(--tx)" stroke-width="3"/>
+<path d="M235 104V112" stroke="var(--mu)" stroke-width="5"/><circle cx="235" cy="78" r="26" fill="var(--sf)" stroke="var(--tx)" stroke-width="3"/>
+<path d="M221.14 86A16 16 0 0 1 221.74 69.06" stroke="#f0a020" stroke-width="3" fill="none"/><path d="M221.74 69.06A16 16 0 0 1 250.22 73.06" stroke="#18a957" stroke-width="3" fill="none"/><path d="M250.22 73.06A16 16 0 0 1 248.86 86" stroke="#e5484d" stroke-width="3" fill="none"/>
+<path d="M218.55 87.5L215.08 89.5M216.93 72.13L213.13 70.89M227.27 60.63L225.64 56.98M242.73 60.63L244.36 56.98M253.07 72.13L256.87 70.89M251.45 87.5L254.92 89.5" stroke="var(--tx)" stroke-width="1.5"/>
+<line id="nd" x1="235" y1="78" x2="235" y2="59" stroke="#e5484d" stroke-width="2.5" stroke-linecap="round"/><circle cx="235" cy="78" r="3.5" fill="var(--tx)"/><text x="235" y="99" text-anchor="middle" class="sm">PSI</text>
+<path d="M300 112V98M300 86V80H318" stroke="var(--mu)" stroke-width="5" fill="none"/><path id="vb" d="M292 86L308 98V86L292 98Z" fill="var(--bd)" stroke="var(--tx)" stroke-width="2"/>
+<g id="pf" opacity="0"><circle class="puff" cx="322" cy="80" r="3"/><circle class="puff" style="animation-delay:.33s" cx="322" cy="80" r="3"/><circle class="puff" style="animation-delay:.66s" cx="322" cy="80" r="3"/></g>
+<text x="35" y="196" text-anchor="middle" class="sm">MOTOR · DO0</text><text x="70" y="44" text-anchor="middle" class="sm">PUMP</text><text x="235" y="46" text-anchor="middle" class="sm">PRESSURE GAUGE</text><text x="322" y="66" text-anchor="middle" class="sm">VENT · DO1</text>
+<text x="225" y="128" text-anchor="middle" class="sm">AIR TANK</text><text id="ps" x="225" y="152" text-anchor="middle" class="bd">0 psi</text></svg>
+<p class="mu" style="margin:0;padding:0 8px 8px;font-size:12px">① มอเตอร์ (DO0) หมุนสายพาน → ปั๊มอัดลมเข้าถัง ② ความดันในถังเพิ่ม เข็มวัดและระดับสีในถังขยับตาม ③ วาล์วระบาย (DO1) เปิดเพื่อปล่อยลม · เซนเซอร์ LOW (DI4) ติดเมื่อ ≤ 40 psi, HIGH (DI3) ติดเมื่อ ≥ 120 psi · หน้าปัด: เหลือง = ต่ำ, เขียว = ปกติ, แดง = สูง</p></div>
 </div><div style="min-width:0">
 <div class="pn"><div class="tabs"><button data-v="lad" class="a">Ladder</button><button data-v="st">Structured Text</button></div>
 <div id="lw"><div class="tb"><select id="mode"><option>PROG</option><option>RUN</option></select><button id="un" title="Undo (Ctrl+Z)">↶</button><button id="re" title="Redo (Ctrl+Y)">↷</button><button id="de" title="ลบคำสั่ง (Del)">ลบ</button><button id="ar">+ Rung</button><button id="dr">ลบ Rung</button><button id="up">↑</button><button id="dn">↓</button><button id="ic">แทรกช่อง</button><button id="dc">ลบช่อง</button></div><div class="help">คลิกช่อง แล้วกดเลข 1–8 หรือปุ่มพาเลตต์เพื่อวางคำสั่ง จากนั้น<b>เลือกแท็กจากแถบด้านบน</b> · ลูกศร = เลื่อนเคอร์เซอร์ · Del = ลบ · <b>วงกลมระหว่างแถว</b> = เส้นเชื่อมแนวตั้ง (ทำวงจรขนาน)</div>
@@ -237,8 +257,13 @@ $$('[data-o]').forEach(b=>b.onclick=()=>{$$('[data-o]').forEach(x=>x.classList.t
 function paint(){tags.forEach((t,i)=>{const e=document.getElementById('tv'+i);if(!e)return;
   const s=t.t=='TON'?`${(t.acc/1000).toFixed(1)}s · ${t.v}`:t.t=='CTU'?`${t.acc}/${t.pre} · ${t.v}`:t.v;
   if(e.tagName=='INPUT'){if(document.activeElement!==e)e.value=s}else if(e.textContent!=s)e.textContent=s;mk('iv-'+t.n,!!t.v)});
- const m=fn('DO0'),v=fn('DO1');$('#nd').setAttribute('transform',`rotate(${P/150*240-120} 240 38)`);$('#ps').textContent=Math.round(P)+' psi';
- $('#fw').classList.toggle('spin',!!(m&&m.v));$('#mt').setAttribute('fill',m&&m.v?'var(--on)':'var(--bd)');$('#pf').setAttribute('opacity',v&&v.v?1:0)}
+ scene(fn('DO0'),fn('DO1'))}
+function scene(m,v){const on=!!(m&&m.v),vo=!!(v&&v.v),h=P/150*56,col=P>=120?'#e5484d':P<=40?'#f0a020':'#3b9bff',lo=fn('DI4'),hi=fn('DI3');
+ $('#nd').setAttribute('transform',`rotate(${P/150*240-120} 235 78)`);$('#ps').textContent=Math.round(P)+' psi';
+ const tf=$('#tf');tf.setAttribute('y',168-h);tf.setAttribute('height',h);tf.setAttribute('fill',col);
+ $('#fw').classList.toggle('spin',on);$('#mt').setAttribute('fill',on?'var(--on)':'var(--bd)');$('#fl').setAttribute('opacity',on?1:0);
+ $('#vb').setAttribute('fill',vo?'var(--on)':'var(--bd)');$('#pf').setAttribute('opacity',vo?1:0);
+ $('#lw').setAttribute('fill',lo&&lo.v?'var(--on)':'var(--bd)');$('#hw').setAttribute('fill',hi&&hi.v?'#e5484d':'var(--bd)')}
 let last=performance.now();setInterval(()=>{const n=performance.now(),dt=Math.min(n-last,200);last=n;phys(dt);if(mode=='RUN')scan(dt);paint()},50);
 if(!load()){base();prog=[newRung()];sel={r:0,w:0,c:0}}rt();pal();draw();say('พร้อมใช้งาน – อยู่ในโหมด PROG');
 </script></body></html>
